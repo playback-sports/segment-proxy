@@ -75,5 +75,14 @@ func main() {
 		log.Printf("serving proxy at port %v\n", *port)
 	}
 
-	log.Fatal(http.ListenAndServe(":"+*port, proxy))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		proxy.ServeHTTP(w, r)
+	})
+
+	log.Fatal(http.ListenAndServe(":"+*port, nil))
 }
